@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bond Yield Spread Calculator | BondStats</title>
+  <meta name="description" content="Compare 10-year government bond yields across countries and calculate sovereign bond yield spreads instantly." />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --card: #f7f8fa;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #111827;
+      --positive: #0f9d58;
+      --negative: #c62828;
+      --neutral: #b7791f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .tool-wrap {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .tool-header {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .subtext {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 700px;
+    }
+
+    .tool-body {
+      padding: 20px;
+      background: var(--card);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+    }
+
+    select:focus {
+      border-color: #9ca3af;
+    }
+
+    .results {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .big-number {
+      font-size: 34px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin: 6px 0 8px;
+    }
+
+    .yield-line {
+      font-size: 15px;
+      margin: 6px 0;
+    }
+
+    .signal {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .signal.positive {
+      background: rgba(15, 157, 88, 0.12);
+      color: var(--positive);
+    }
+
+    .signal.negative {
+      background: rgba(198, 40, 40, 0.12);
+      color: var(--negative);
+    }
+
+    .signal.neutral {
+      background: rgba(183, 121, 31, 0.14);
+      color: var(--neutral);
+    }
+
+    .explanation {
+      margin-top: 16px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .explanation h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .explanation p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .grid,
+      .results {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-header,
+      .tool-body {
+        padding: 16px;
+      }
+
+      .big-number {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="tool-wrap">
+      <div class="tool-header">
+        <h1>Bond Yield Spread Calculator</h1>
+        <p class="subtext">
+          Compare 10-year government bond yields across countries and calculate sovereign bond yield spreads instantly.
+        </p>
+      </div>
+
+      <div class="tool-body">
+        <div class="grid">
+          <div class="field">
+            <label for="countryA">Country A</label>
+            <select id="countryA"></select>
+          </div>
+
+          <div class="field">
+            <label for="countryB">Country B</label>
+            <select id="countryB"></select>
+          </div>
+        </div>
+
+        <div class="results">
+          <div class="card">
+            <h2 id="pairTitle">United States vs Germany</h2>
+            <div class="meta">10-year government bond yield spread</div>
+            <div class="big-number" id="spreadValue">1.66%</div>
+
+            <div class="yield-line"><strong id="countryALabel">United States</strong>: <span id="yieldA">4.20%</span></div>
+            <div class="yield-line"><strong id="countryBLabel">Germany</strong>: <span id="yieldB">2.54%</span></div>
+
+            <div class="signal neutral" id="spreadSignal">Moderate spread</div>
+          </div>
+
+          <div class="card">
+            <h2>Interpretation</h2>
+            <div class="meta">How to read the result</div>
+            <div class="yield-line" id="directionText"></div>
+            <div class="yield-line" id="contextText"></div>
+            <div class="yield-line" id="formulaText"></div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <h3>What this tool shows</h3>
+          <p>
+            A positive spread means Country A has a higher 10-year government bond yield than Country B.
+            A negative spread means Country A has a lower yield. Yield spreads are widely used to compare
+            interest rate levels, inflation expectations, and relative sovereign risk across bond markets.
+          </p>
+        </div>
+
+        <div class="footer-note">
+          Source: BondStats global 10-year government bond yield data.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const yields = {
+      "Australia": 4.10,
+      "Austria": 2.72,
+      "Belgium": 2.78,
+      "Brazil": 11.10,
+      "Bulgaria": 3.80,
+      "Canada": 3.42,
+      "Chile": 5.95,
+      "China": 2.30,
+      "Colombia": 9.85,
+      "Croatia": 3.25,
+      "Czech Republic": 4.28,
+      "Denmark": 2.31,
+      "Finland": 2.67,
+      "France": 3.25,
+      "Germany": 2.54,
+      "Greece": 3.38,
+      "Hungary": 6.65,
+      "India": 7.06,
+      "Indonesia": 6.68,
+      "Ireland": 2.83,
+      "Israel": 4.31,
+      "Italy": 3.78,
+      "Japan": 1.45,
+      "Malaysia": 3.86,
+      "Mexico": 9.28,
+      "Netherlands": 2.66,
+      "New Zealand": 4.61,
+      "Norway": 3.78,
+      "Peru": 6.12,
+      "Poland": 5.43,
+      "Portugal": 3.08,
+      "Romania": 6.38,
+      "Slovakia": 3.08,
+      "Slovenia": 3.04,
+      "South Africa": 9.82,
+      "Spain": 3.31,
+      "Sweden": 2.36,
+      "Switzerland": 0.87,
+      "United Kingdom": 4.05,
+      "United States": 4.21
+    };
+
+    const countryAEl = document.getElementById("countryA");
+    const countryBEl = document.getElementById("countryB");
+
+    const pairTitle = document.getElementById("pairTitle");
+    const spreadValue = document.getElementById("spreadValue");
+    const countryALabel = document.getElementById("countryALabel");
+    const countryBLabel = document.getElementById("countryBLabel");
+    const yieldAEl = document.getElementById("yieldA");
+    const yieldBEl = document.getElementById("yieldB");
+    const spreadSignal = document.getElementById("spreadSignal");
+    const directionText = document.getElementById("directionText");
+    const contextText = document.getElementById("contextText");
+    const formulaText = document.getElementById("formulaText");
+
+    const sortedCountries = Object.keys(yields).sort((a, b) => a.localeCompare(b));
+
+    function addOptions() {
+      sortedCountries.forEach(country => {
+        const optionA = document.createElement("option");
+        optionA.value = country;
+        optionA.textContent = country;
+        countryAEl.appendChild(optionA);
+
+        const optionB = document.createElement("option");
+        optionB.value = country;
+        optionB.textContent = country;
+        countryBEl.appendChild(optionB);
+      });
+
+      countryAEl.value = "United States";
+      countryBEl.value = "Germany";
+    }
+
+    function spreadLabel(spread) {
+      const abs = Math.abs(spread);
+
+      if (abs < 0.5) {
+        return { text: "Narrow spread", className: "neutral" };
+      }
+      if (abs < 2.0) {
+        return { text: "Moderate spread", className: "neutral" };
+      }
+      if (spread > 0) {
+        return { text: "Wide positive spread", className: "positive" };
+      }
+      return { text: "Wide negative spread", className: "negative" };
+    }
+
+    function updateCalculator() {
+      const countryA = countryAEl.value;
+      const countryB = countryBEl.value;
+
+      const yieldA = yields[countryA];
+      const yieldB = yields[countryB];
+      const spread = +(yieldA - yieldB).toFixed(2);
+
+      pairTitle.textContent = `${countryA} vs ${countryB}`;
+      spreadValue.textContent = `${spread > 0 ? "+" : ""}${spread.toFixed(2)}%`;
+
+      countryALabel.textContent = countryA;
+      countryBLabel.textContent = countryB;
+      yieldAEl.textContent = `${yieldA.toFixed(2)}%`;
+      yieldBEl.textContent = `${yieldB.toFixed(2)}%`;
+
+      const label = spreadLabel(spread);
+      spreadSignal.textContent = label.text;
+      spreadSignal.className = `signal ${label.className}`;
+
+      if (spread > 0) {
+        directionText.innerHTML = `<strong>${countryA}</strong> has a higher 10-year government bond yield than <strong>${countryB}</strong>.`;
+      } else if (spread < 0) {
+        directionText.innerHTML = `<strong>${countryA}</strong> has a lower 10-year government bond yield than <strong>${countryB}</strong>.`;
+      } else {
+        directionText.innerHTML = `<strong>${countryA}</strong> and <strong>${countryB}</strong> currently have the same 10-year yield.`;
+      }
+
+      contextText.textContent =
+        "Yield spreads help compare sovereign bond markets, interest rate levels, inflation expectations, and relative risk.";
+
+      formulaText.textContent =
+        `Formula: ${yieldA.toFixed(2)}% − ${yieldB.toFixed(2)}% = ${spread > 0 ? "+" : ""}${spread.toFixed(2)}%`;
+    }
+
+    addOptions();
+    updateCalculator();
+
+    countryAEl.addEventListener("change", updateCalculator);
+    countryBEl.addEventListener("change", updateCalculator);
+  </script>
+</body>
+</html>
